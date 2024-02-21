@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    radapp.io/enabled: 'true'
+    radapp.io/connection-redis: 'db'
+    radapp.io/environment: {{ .Values.environment }}
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        ports:
+        - containerPort: 3000
+---
+apiVersion: radapp.io/v1alpha3
+kind: Recipe
+metadata:
+  name: db
+  namespace: {{ .Release.Namespace }}
+spec:
+  environment: {{ .Values.environment }}
+  type: Applications.Datastores/redisCaches

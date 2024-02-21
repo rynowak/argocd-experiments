@@ -1,0 +1,3 @@
+image:
+  repository: rynowak.azurecr.io/samples/demo-demo
+  tag: latest
