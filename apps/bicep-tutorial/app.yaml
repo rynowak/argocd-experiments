@@ -3,6 +3,7 @@ apiVersion: radapp.io/v1alpha3
 metadata:
   name: demo
 spec:
+  environment: prod-aws-argocd
   template: |
     {
       "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
