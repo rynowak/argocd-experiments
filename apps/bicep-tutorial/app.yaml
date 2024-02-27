@@ -1,0 +1,73 @@
+kind: ApplicationDeployment
+apiVersion: radapp.io/v1alpha3
+metadata:
+  name: demo
+spec:
+  template: |
+    {
+      "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+      "languageVersion": "1.9-experimental",
+      "contentVersion": "1.0.0.0",
+      "metadata": {
+        "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+        "_generator": {
+          "name": "bicep",
+          "version": "0.30.0.1",
+          "templateHash": "3712878479444741567"
+        }
+      },
+      "parameters": {
+        "application": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string"
+        }
+      },
+      "imports": {
+        "radius": {
+          "provider": "Radius",
+          "version": "1.0"
+        }
+      },
+      "resources": {
+        "demo": {
+          "import": "radius",
+          "type": "Applications.Core/containers@2023-10-01-preview",
+          "properties": {
+            "name": "demo",
+            "properties": {
+              "application": "[parameters('application')]",
+              "container": {
+                "image": "ghcr.io/radius-project/samples/demo:latest",
+                "ports": {
+                  "web": {
+                    "containerPort": 3000
+                  }
+                }
+              },
+              "connections": {
+                "redis": {
+                  "source": "[reference('db').id]"
+                }
+              }
+            }
+          },
+          "dependsOn": [
+            "db"
+          ]
+        },
+        "db": {
+          "import": "radius",
+          "type": "Applications.Datastores/redisCaches@2023-10-01-preview",
+          "properties": {
+            "name": "db",
+            "properties": {
+              "application": "[parameters('application')]",
+              "environment": "[parameters('environment')]"
+            }
+          }
+        }
+      }
+    }
